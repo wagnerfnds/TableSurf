@@ -1,4 +1,10 @@
 name: TableSurf
+settings:
+  base:
+    # Valem para todos os targets: os frameworks embutidos também precisam de versão
+    # no Info.plist, senão o App Store Connect recusa o upload.
+    MARKETING_VERSION: "0.2.5"
+    CURRENT_PROJECT_VERSION: "8"
 options:
   bundleIdPrefix: dev.tablesurf
   deploymentTarget:
@@ -48,8 +54,6 @@ targets:
         PRODUCT_NAME: TableSurf
         # O mesmo bundle do iOS: um registro só na App Store (compra universal).
         PRODUCT_BUNDLE_IDENTIFIER: dev.tablesurf.app
-        MARKETING_VERSION: "0.2.5"
-        CURRENT_PROJECT_VERSION: "8"
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_IDENTITY: "-"
         SWIFT_VERSION: "6.0"
@@ -104,8 +108,6 @@ targets:
       base:
         PRODUCT_NAME: TableSurf
         PRODUCT_BUNDLE_IDENTIFIER: dev.tablesurf.app
-        MARKETING_VERSION: "0.2.5"
-        CURRENT_PROJECT_VERSION: "8"
         CODE_SIGN_STYLE: Automatic
         SWIFT_VERSION: "6.0"
         TARGETED_DEVICE_FAMILY: "1,2"
