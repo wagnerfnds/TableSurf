@@ -105,12 +105,27 @@ public struct ConnectionConfig: Codable, Identifiable, Hashable, Sendable {
     public var displaySubtitle: String {
         switch engine {
         case .sqlite:
-            return sqlitePath.isEmpty ? "sem arquivo" : sqlitePath
+            return sqlitePath.isEmpty ? "sem arquivo" : Self.abbreviatingHome(sqlitePath)
         default:
             let target = "\(host):\(port)/\(database)"
             // O túnel é o que explica um "localhost" que na verdade é um servidor remoto.
             return usesSSHTunnel ? "\(target) via ssh \(sshConfig.host)" : target
         }
+    }
+}
+
+extension ConnectionConfig {
+    /// `~/…` no lugar da pasta do usuário: o caminho aparece na barra lateral, e o nome
+    /// da conta não precisa ir junto em todo print de tela.
+    static func abbreviatingHome(_ path: String) -> String {
+        #if os(macOS)
+        // No sandbox, NSHomeDirectory() é o container; o arquivo escolhido está na home real.
+        let home = SSHTunnel.isSandboxed ? SSHTunnel.realHomeDirectory : NSHomeDirectory()
+        #else
+        let home = NSHomeDirectory()
+        #endif
+        guard path == home || path.hasPrefix(home + "/") else { return path }
+        return "~" + path.dropFirst(home.count)
     }
 }
 

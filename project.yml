@@ -137,7 +137,29 @@ targets:
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: YES
         TEST_TARGET_NAME: TableSurfMobile
+  TableSurfMacUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - Tests/TableSurfMacUITests
+    dependencies:
+      - target: TableSurf
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.tablesurf.app.macuitests
+        SWIFT_VERSION: "6.0"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: "-"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: TableSurf
 schemes:
+  TableSurf:
+    build:
+      targets:
+        TableSurf: all
+    test:
+      targets:
+        - TableSurfMacUITests
   TableSurfMobile:
     build:
       targets:
