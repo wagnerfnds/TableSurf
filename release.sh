@@ -7,7 +7,7 @@ cd "$(dirname "$0")"
 
 TEAM_ID="${TABLESURF_TEAM_ID:-$(cat .team-id 2>/dev/null || true)}"
 [[ -n "$TEAM_ID" ]] || { echo "Defina TABLESURF_TEAM_ID ou crie .team-id com o seu Team ID." >&2; exit 1; }
-VERSION=$(grep -m1 'MARKETING_VERSION' project.yml | sed 's/.*"\(.*\)".*/\1/')
+VERSION=$(grep -m1 "MARKETING_VERSION" project.yml | sed 's/.*"\(.*\)".*/\1/')
 BUILD_DIR=build/release
 ARCHIVE="$BUILD_DIR/TableSurf.xcarchive"
 EXPORT="$BUILD_DIR/export"
