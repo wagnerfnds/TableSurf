@@ -14,9 +14,9 @@ Textos para colar no App Store Connect. Idioma principal: **Português (Brasil)*
 | Categoria principal | Ferramentas de desenvolvedor (Developer Tools) |
 | Categoria secundária | Produtividade |
 | Classificação etária | 4+ (nenhum conteúdo marcado) |
-| URL de suporte | https://github.com/wagnerfnds/DBDeck/issues |
-| URL de marketing | https://github.com/wagnerfnds/DBDeck |
-| Política de privacidade | https://github.com/wagnerfnds/DBDeck/blob/main/PRIVACY.md |
+| URL de suporte | https://github.com/wagnerfnds/TableSurf/issues |
+| URL de marketing | https://github.com/wagnerfnds/TableSurf |
+| Política de privacidade | https://github.com/wagnerfnds/TableSurf/blob/main/PRIVACY.md |
 | Privacidade do app | **Dados não coletados** |
 | Criptografia | Só a padrão do sistema (TLS) — `ITSAppUsesNonExemptEncryption = NO` já está no Info.plist |
 | Copyright | 2026 Wagner Fernandes |

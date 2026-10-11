@@ -15,7 +15,7 @@ não envia e não vende dados de ninguém.
 - **Exportações e dumps** são gravados onde você escolher e compartilhados só pela
   ação que você fizer (planilha de compartilhamento, painel de salvar).
 
-Dúvidas: abra uma issue em https://github.com/wagnerfnds/DBDeck/issues.
+Dúvidas: abra uma issue em https://github.com/wagnerfnds/TableSurf/issues.
 
 ---
 
@@ -36,4 +36,4 @@ or sell anyone's data.
 - **Exports and dumps** are written where you choose and shared only through the
   action you take (share sheet, save panel).
 
-Questions: open an issue at https://github.com/wagnerfnds/DBDeck/issues.
+Questions: open an issue at https://github.com/wagnerfnds/TableSurf/issues.
