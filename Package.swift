@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "DBDeck",
+    name: "TableSurf",
     platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
-        .library(name: "DBDeckCore", targets: ["DBDeckCore"]),
-        .executable(name: "DBDeck", targets: ["DBDeckApp"]),
+        .library(name: "TableSurfCore", targets: ["TableSurfCore"]),
+        .executable(name: "TableSurf", targets: ["TableSurfApp"]),
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/postgres-nio.git", from: "1.25.0"),
@@ -15,7 +15,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "DBDeckCore",
+            name: "TableSurfCore",
             dependencies: [
                 .product(name: "PostgresNIO", package: "postgres-nio"),
                 .product(name: "MySQLNIO", package: "mysql-nio"),
@@ -23,12 +23,12 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "DBDeckApp",
-            dependencies: ["DBDeckCore"]
+            name: "TableSurfApp",
+            dependencies: ["TableSurfCore"]
         ),
         .testTarget(
-            name: "DBDeckCoreTests",
-            dependencies: ["DBDeckCore"]
+            name: "TableSurfCoreTests",
+            dependencies: ["TableSurfCore"]
         ),
     ]
 )

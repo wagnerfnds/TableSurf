@@ -1,13 +1,13 @@
-# Como o Sequel Ace carrega tabelas tão rápido — estudo e comparação com o DBDeck
+# Como o Sequel Ace carrega tabelas tão rápido — estudo e comparação com o TableSurf
 
 Fonte: `github.com/Sequel-Ace/Sequel-Ace` (clone raso analisado em 2026-08-23).
-Referências no formato `arquivo:linha` apontam para o repositório deles; as do DBDeck estão marcadas com **[DBDeck]**.
+Referências no formato `arquivo:linha` apontam para o repositório deles; as do TableSurf estão marcadas com **[TableSurf]**.
 
 ---
 
 ## 1. Resumo executivo
 
-A velocidade do Sequel Ace **não vem da view**. Vem de três decisões de arquitetura que o DBDeck não tem hoje:
+A velocidade do Sequel Ace **não vem da view**. Vem de três decisões de arquitetura que o TableSurf não tem hoje:
 
 | # | Decisão | Efeito |
 |---|---------|--------|
@@ -126,7 +126,7 @@ Confirmado pelo protocolo implementado em `SPTableContent.m`: `tableView:objectV
 
 Cada célula é um `SPTextAndLinkCell` (um `NSCell`) **compartilhado por coluna**: não há hierarquia de views, nem Auto Layout, nem `NSTextField` por célula. Desenhar 40 linhas × 30 colunas visíveis = 1200 chamadas de `drawWithFrame:`, não 1200 views com constraints.
 
-`rowHeight = 16` (contra 26 no DBDeck) também significa ~60% mais linhas na tela — o que é UX, não performance, mas explica a sensação de "cabe tudo".
+`rowHeight = 16` (contra 26 no TableSurf) também significa ~60% mais linhas na tela — o que é UX, não performance, mas explica a sensação de "cabe tudo".
 
 ### 2.6 Progressão: o timer de 20 ms
 
@@ -194,11 +194,11 @@ Aqui **não há mágica** — offset profundo é lento neles também. A diferen�
 
 ---
 
-## 3. Onde o DBDeck perde (diagnóstico)
+## 3. Onde o TableSurf perde (diagnóstico)
 
 ### 3.1 Abrir uma tabela custa ~15 round-trips + um `COUNT(*)`
 
-**[DBDeck]** `Sources/DBDeckApp/Views/TableDataView.swift:479` (`load()`):
+**[TableSurf]** `Sources/TableSurfApp/Views/TableDataView.swift:479` (`load()`):
 
 ```swift
 columns = try await driver.columns(table: table)        // information_schema.columns
@@ -207,9 +207,9 @@ primaryKeys = try await driver.primaryKeys(table: table) // information_schema.k
 await loadPage(offset: 0, recount: true)                 // SELECT + COUNT(*)
 ```
 
-E `MySQLDriver.columns(table:)` **[DBDeck]** `Sources/DBDeckCore/Drivers/MySQLDriver.swift:84` chama `primaryKeys()` internamente (`:94`) — ou seja, `key_column_usage` é consultado **duas vezes**.
+E `MySQLDriver.columns(table:)` **[TableSurf]** `Sources/TableSurfCore/Drivers/MySQLDriver.swift:84` chama `primaryKeys()` internamente (`:94`) — ou seja, `key_column_usage` é consultado **duas vezes**.
 
-Pior: cada `driver.query()` **[DBDeck]** `MySQLDriver.swift:141` usa `connection.query(...)` do MySQLNIO, que é **prepared statement**: `COM_STMT_PREPARE` → `COM_STMT_EXECUTE` → `COM_STMT_CLOSE` (`ThirdParty/mysql-nio/Sources/MySQLNIO/MySQLQueryCommand.swift:109,223`). **3 round-trips por consulta.**
+Pior: cada `driver.query()` **[TableSurf]** `MySQLDriver.swift:141` usa `connection.query(...)` do MySQLNIO, que é **prepared statement**: `COM_STMT_PREPARE` → `COM_STMT_EXECUTE` → `COM_STMT_CLOSE` (`ThirdParty/mysql-nio/Sources/MySQLNIO/MySQLQueryCommand.swift:109,223`). **3 round-trips por consulta.**
 
 Somando para abrir uma tabela:
 
@@ -228,7 +228,7 @@ Num banco remoto com 60 ms de latência: **900 ms contra 240 ms**, *antes* de qu
 
 ### 3.2 `COUNT(*)` sem escapatória
 
-**[DBDeck]** `Sources/DBDeckCore/Drivers/DatabaseDriver.swift:111`:
+**[TableSurf]** `Sources/TableSurfCore/Drivers/DatabaseDriver.swift:111`:
 
 ```swift
 func countRows(table: String) async throws -> Int {
@@ -243,7 +243,7 @@ Em InnoDB isso é varredura completa do índice. Em 5 M linhas: **2 a 20 s** —
 
 ### 3.3 Materialização integral de cada célula
 
-**[DBDeck]** `Sources/DBDeckCore/Drivers/MySQLDriver.swift:189` e `:301`:
+**[TableSurf]** `Sources/TableSurfCore/Drivers/MySQLDriver.swift:189` e `:301`:
 
 ```swift
 private static func decode(row: MySQLRow) -> [SQLValue] {
@@ -266,7 +266,7 @@ O Sequel Ace nesse cenário faz: 500 `malloc` + `memcpy`, e depois ~40 `NSString
 
 ### 3.4 Nada aparece antes do fim
 
-**[DBDeck]** `MySQLDriver.swift:145`: `try await connection.query(sql).get()` — o future só resolve com **todas** as linhas. Depois `rows = result.rows` (`TableDataView.swift:520`) publica tudo de uma vez.
+**[TableSurf]** `MySQLDriver.swift:145`: `try await connection.query(sql).get()` — o future só resolve com **todas** as linhas. Depois `rows = result.rows` (`TableDataView.swift:520`) publica tudo de uma vez.
 
 Existe `streamQuery` no protocolo (`DatabaseDriver.swift:50`), mas ele **só é usado no dump**, não no grid.
 
@@ -274,7 +274,7 @@ Não há equivalente do timer de 20 ms: a tela fica com o estado anterior (ou va
 
 ### 3.5 Grid view-based
 
-**[DBDeck]** `Sources/DBDeckApp/Views/DataGridView.swift:330` — `tableView(_:viewFor:row:)` devolve `GridTextCellView` (`:938`), um `NSTableCellView` com `NSTextField` + **3 constraints de Auto Layout**:
+**[TableSurf]** `Sources/TableSurfApp/Views/DataGridView.swift:330` — `tableView(_:viewFor:row:)` devolve `GridTextCellView` (`:938`), um `NSTableCellView` com `NSTextField` + **3 constraints de Auto Layout**:
 
 ```swift
 NSLayoutConstraint.activate([
@@ -290,7 +290,7 @@ Some-se: `configure(value:numeric:)` (`:979`) chama `NSFontManager.shared.conver
 
 ### 3.6 Detalhes menores, mas reais
 
-- `estimateWidth` **[DBDeck]** `DataGridView.swift:65` amostra só `rows.prefix(40)` — as **primeiras** 40, não espalhadas. Colunas ficam mal dimensionadas quando os dados variam ao longo da página. E não há o passo de "reduzir proporcionalmente para caber na largura visível".
+- `estimateWidth` **[TableSurf]** `DataGridView.swift:65` amostra só `rows.prefix(40)` — as **primeiras** 40, não espalhadas. Colunas ficam mal dimensionadas quando os dados variam ao longo da página. E não há o passo de "reduzir proporcionalmente para caber na largura visível".
 - Página de **500** contra 1000 do Sequel Ace: mais cliques de paginação, e cada clique paga os 3 RTT + decode.
 - Nenhuma opção de adiar BLOB/TEXT (`LoadBlobsAsNeeded`).
 - `Theme.rowHeight = 26` contra 16: menos linhas por tela.
@@ -445,8 +445,8 @@ isolado); os vilões eram todos da camada AppKit/SwiftUI, e se multiplicavam:
 ### Método (fica para a próxima)
 
 - Harness `GridBench` (target SwiftPM temporário com o grid real + NSHostingView + watchdog de hangs) — mediu o grid isolado sem UI manual.
-- Harness `DBDECK_AUTO` (env var que auto-conectava e abria tabelas em sequência) — mediu o app inteiro sem cliques.
-- `sample DBDeck` durante o carregamento + `SHOW PROCESSLIST` — foi o que separou "servidor lento" (não era) de "main thread ocupado" (era), e apontou `setWidth → _NSViewAnimator → CAAnimation` como o dominante.
+- Harness `TABLESURF_AUTO` (env var que auto-conectava e abria tabelas em sequência) — mediu o app inteiro sem cliques.
+- `sample TableSurf` durante o carregamento + `SHOW PROCESSLIST` — foi o que separou "servidor lento" (não era) de "main thread ocupado" (era), e apontou `setWidth → _NSViewAnimator → CAAnimation` como o dominante.
 - Armadilha que custou tempo: o harness compilava CÓPIAS dos arquivos do grid — símbolos iguais, código velho. Symlinks resolveram; benchmarks que não mudam quando você muda o código são o sinal.
 
 ---

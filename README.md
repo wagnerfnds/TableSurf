@@ -1,4 +1,4 @@
-# DBDeck
+# TableSurf
 
 A native macOS database client built with SwiftUI. Connect to **PostgreSQL**, **MySQL** and **SQLite** databases, browse and edit data, and run SQL — all in a fast, lightweight Mac app.
 
@@ -18,7 +18,7 @@ A native macOS database client built with SwiftUI. Connect to **PostgreSQL**, **
 
 ### SSH tunnels
 
-A connection can be opened through an SSH tunnel. DBDeck drives the system
+A connection can be opened through an SSH tunnel. TableSurf drives the system
 `/usr/bin/ssh`, so everything already configured in `~/.ssh/config` keeps working —
 `ProxyJump`, per-host keys, agent forwarding. Three ways to authenticate:
 
@@ -43,7 +43,7 @@ of the same user can read with `ps`.
 
 ```sh
 xcodegen generate
-xcodebuild -project DBDeck.xcodeproj -scheme DBDeck -configuration Release build
+xcodebuild -project TableSurf.xcodeproj -scheme TableSurf -configuration Release build
 ```
 
 Or build, install to `/Applications` and launch in one step:
@@ -55,7 +55,7 @@ Or build, install to `/Applications` and launch in one step:
 ## iOS / iPadOS
 
 The same core (drivers, keyset pagination, streaming, formatter, autocomplete) also ships
-as a native iPhone and iPad app (`DBDeckMobile` target, iOS 17+). The interface is built
+as a native iPhone and iPad app (`TableSurfMobile` target, iOS 17+). The interface is built
 for touch:
 
 - **Data grid** on `UICollectionView` with a spreadsheet layout — only visible cells exist,
@@ -68,7 +68,7 @@ for touch:
   keyboard, run selection / statement under cursor, cancel, history and saved queries
 - Structure editing, relations, triggers and DDL; CSV/JSON/SQL export and dumps through
   the share sheet
-- SQLite files are imported from the Files app (they live in *On My iPhone › DBDeck*)
+- SQLite files are imported from the Files app (they live in *On My iPhone › TableSurf*)
 - On iPad, a three-column layout (connections › tables › content) with keyboard shortcuts
 
 SSH tunnels rely on the system `ssh` and are macOS only for now.
@@ -88,13 +88,13 @@ UI tests drive the iOS app through its main flows (they expect a SQLite connecti
 "Loja (demo)"):
 
 ```sh
-xcodebuild test -project DBDeck.xcodeproj -scheme DBDeckMobile -destination 'platform=iOS Simulator,name=iPhone 17'
+xcodebuild test -project TableSurf.xcodeproj -scheme TableSurfMobile -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
 Postgres integration tests are opt-in and run against a live server:
 
 ```sh
-DBDECK_PG_HOST=localhost DBDECK_PG_USER=postgres swift test --filter PostgresIntegration
+TABLESURF_PG_HOST=localhost TABLESURF_PG_USER=postgres swift test --filter PostgresIntegration
 ```
 
 ## Contributing

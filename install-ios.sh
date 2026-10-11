@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Compila o DBDeck para iOS e instala.
+# Compila o TableSurf para iOS e instala.
 #
 #   ./install-ios.sh                 → simulador já aberto (ou "iPhone 17")
 #   ./install-ios.sh device TEAMID   → iPhone/iPad conectado, assinado com o seu time
@@ -14,10 +14,10 @@ xcodegen generate
 
 if [[ "${1:-}" == "device" ]]; then
     team="${2:?informe o Team ID: ./install-ios.sh device ABCDE12345}"
-    xcodebuild -project DBDeck.xcodeproj -scheme DBDeckMobile -configuration Release \
+    xcodebuild -project TableSurf.xcodeproj -scheme TableSurfMobile -configuration Release \
         -destination 'generic/platform=iOS' -derivedDataPath build/ios-device \
         -allowProvisioningUpdates DEVELOPMENT_TEAM="$team" -quiet build
-    app=build/ios-device/Build/Products/Release-iphoneos/DBDeck.app
+    app=build/ios-device/Build/Products/Release-iphoneos/TableSurf.app
     # A listagem do devicectl mistura simuladores e aparelhos: só os físicos pareados servem.
     devices_json=$(mktemp)
     xcrun devicectl list devices --json-output "$devices_json" >/dev/null
@@ -32,8 +32,8 @@ print(physical[0]["identifier"] if physical else "")
     [[ -n "$device" ]] || { echo "Nenhum iPhone/iPad pareado encontrado." >&2; exit 1; }
     xcrun devicectl device install app --device "$device" "$app"
     # Aparelho bloqueado recusa abrir o app — a instalação já valeu, então não é erro.
-    xcrun devicectl device process launch --device "$device" br.dev.dbdeck.mobile >/dev/null 2>&1 \
-        || echo "Instalado. Desbloqueie o aparelho e abra o DBDeck."
+    xcrun devicectl device process launch --device "$device" dev.tablesurf.app >/dev/null 2>&1 \
+        || echo "Instalado. Desbloqueie o aparelho e abra o TableSurf."
 else
     sim=$(xcrun simctl list devices booted | awk -F '[()]' '/iPhone|iPad/ {print $2; exit}')
     if [[ -z "$sim" ]]; then
@@ -41,9 +41,9 @@ else
         xcrun simctl boot "$sim"
         open -a Simulator
     fi
-    xcodebuild -project DBDeck.xcodeproj -scheme DBDeckMobile -configuration Debug \
+    xcodebuild -project TableSurf.xcodeproj -scheme TableSurfMobile -configuration Debug \
         -destination "id=$sim" -derivedDataPath build/ios-sim -quiet build
-    xcrun simctl install "$sim" build/ios-sim/Build/Products/Debug-iphonesimulator/DBDeck.app
-    xcrun simctl launch "$sim" br.dev.dbdeck.mobile
+    xcrun simctl install "$sim" build/ios-sim/Build/Products/Debug-iphonesimulator/TableSurf.app
+    xcrun simctl launch "$sim" dev.tablesurf.app
 fi
-echo "✓ DBDeck iOS instalado"
+echo "✓ TableSurf iOS instalado"
