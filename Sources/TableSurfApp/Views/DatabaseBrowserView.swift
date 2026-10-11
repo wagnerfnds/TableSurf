@@ -37,7 +37,11 @@ private struct TableSidebar: View {
     private var fixedDatabase: String {
         state.config(for: connectionID)?.database ?? ""
     }
-    private var browsingServer: Bool { fixedDatabase.isEmpty }
+    /// SQLite é um arquivo, um banco só: nunca há servidor para navegar, mesmo com o
+    /// campo de banco vazio (o caso das conexões SQLite vindas do iOS).
+    private var browsingServer: Bool {
+        fixedDatabase.isEmpty && state.config(for: connectionID)?.engine != .sqlite
+    }
     private var currentDatabase: String? {
         // O banco trocado na sessão vale mais que o fixo do cadastro — a conexão com
         // banco padrão também pode navegar para os demais bancos do servidor.

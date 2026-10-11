@@ -1,3 +1,4 @@
+import AppKit
 import XCTest
 
 /// Capturas da Mac App Store. Roda pelo `appstore/screenshots-mac.sh`, que monta uma
@@ -17,6 +18,8 @@ final class MacScreenshots: XCTestCase {
             "-AppleLanguages", "(pt-BR)", "-AppleLocale", "pt_BR",
             "-general.appearance", env["TABLESURF_APPEARANCE"] ?? "light",
             "-general.reconnectOnLaunch", "NO",
+            // A digitação do teste é rápida demais: o autocomplete aceitaria sugestões no meio.
+            "-editor.autoCompletion", "NO",
         ]
         app.launch()
     }
@@ -36,12 +39,19 @@ final class MacScreenshots: XCTestCase {
     func testScreenshots() throws {
         let window = app.windows.firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 10))
+        // Janela larga: o frame salvo é ignorado quando o XCUITest lança o app, e
+        // arrastar a borda não redimensiona. O Zoom ocupa a tela; a composição final
+        // (appstore/compose-mac.swift) põe a janela em 2880×1800.
+        app.menuBarItems["Window"].click()
+        app.menuItems["Zoom"].click()
+        sleep(1)
 
         let connection = app.staticTexts["Loja (demo)"].firstMatch
         XCTAssertTrue(connection.waitForExistence(timeout: 10))
         connection.click()
 
-        let table = app.staticTexts["pedidos"].firstMatch
+        // No Mac o texto do SwiftUI chega como `value`, não como `label`.
+        let table = app.staticTexts.matching(NSPredicate(format: "value == 'pedidos'")).firstMatch
         XCTAssertTrue(table.waitForExistence(timeout: 10))
         table.click()
         sleep(3)
@@ -50,19 +60,26 @@ final class MacScreenshots: XCTestCase {
         // Console: nova aba de consulta (⌘T), digita e executa (⌘⏎).
         app.typeKey("t", modifierFlags: .command)
         sleep(1)
-        app.typeText("""
+        app.textViews.firstMatch.click()
+        app.typeKey("a", modifierFlags: .command)
+        // Colada, não digitada: a digitação sintética perdia todo "c" neste Mac.
+        let query = """
         SELECT c.cidade, COUNT(*) AS pedidos, ROUND(SUM(p.total), 2) AS receita
         FROM pedidos p
         JOIN clientes c ON c.id = p.cliente_id
         WHERE p.status <> 'cancelado'
         GROUP BY c.cidade
         ORDER BY receita DESC;
-        """)
+        """
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(query, forType: .string)
+        app.typeKey("v", modifierFlags: .command)
+        sleep(1)
         app.typeKey(.return, modifierFlags: .command)
         sleep(3)
         shot("02-console")
 
-        let clients = app.staticTexts["clientes"].firstMatch
+        let clients = app.staticTexts.matching(NSPredicate(format: "value == 'clientes'")).firstMatch
         clients.click()
         sleep(3)
         shot("03-clientes")
