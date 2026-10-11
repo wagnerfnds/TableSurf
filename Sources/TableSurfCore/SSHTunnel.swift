@@ -113,6 +113,29 @@ public final class SSHTunnel: @unchecked Sendable {
     private var closed = false
     private let lock = NSLock()
 
+    /// Build da Mac App Store: o `ssh` filho herda o sandbox do app.
+    public static var isSandboxed: Bool {
+        ProcessInfo.processInfo.environment["APP_SANDBOX_CONTAINER_ID"] != nil
+    }
+
+    /// Home de verdade do usuário. No sandbox, `NSHomeDirectory()` é o container — mas o
+    /// `ssh` procura `~/.ssh` pelo diretório da conta, que é este.
+    public static var realHomeDirectory: String {
+        guard let entry = getpwuid(getuid()) else { return NSHomeDirectory() }
+        return String(cString: entry.pointee.pw_dir)
+    }
+
+    /// No sandbox sem acesso liberado ao `~/.ssh`, o `ssh` não consegue ler nem gravar o
+    /// `known_hosts` e recusa todo servidor. Um `known_hosts` próprio no container mantém
+    /// o accept-new funcionando.
+    static var sandboxKnownHostsFile: String? {
+        guard isSandboxed else { return nil }
+        let sshFolder = realHomeDirectory + "/.ssh"
+        if (try? FileManager.default.contentsOfDirectory(atPath: sshFolder)) != nil { return nil }
+        try? FileManager.default.createDirectory(at: AppSupport.directory, withIntermediateDirectories: true)
+        return AppSupport.directory.appending(path: "known_hosts").path
+    }
+
     private init(localPort: Int, process: Process, askpass: AskpassChannel?, errorLog: ErrorLog) {
         self.localPort = localPort
         self.process = process
@@ -149,11 +172,13 @@ public final class SSHTunnel: @unchecked Sendable {
             localPort: localPort,
             remoteHost: remoteHost,
             remotePort: remotePort,
-            usesAskpass: askpass != nil
+            usesAskpass: askpass != nil,
+            knownHostsFile: sandboxKnownHostsFile
         )
         var environment = ProcessInfo.processInfo.environment
         if let askpass {
             environment["SSH_ASKPASS"] = askpass.scriptURL.path
+            environment[AskpassChannel.fifoVariable] = askpass.fifoPath
             // Sem REQUIRE=force o ssh só usa o askpass quando não há terminal — e o
             // "não há terminal" do app é o suficiente na maioria dos casos, mas não em
             // todos. DISPLAY é exigido pelo OpenSSH anterior ao 8.4.
@@ -224,7 +249,8 @@ public final class SSHTunnel: @unchecked Sendable {
         localPort: Int,
         remoteHost: String,
         remotePort: Int,
-        usesAskpass: Bool
+        usesAskpass: Bool,
+        knownHostsFile: String? = nil
     ) -> [String] {
         var arguments = [
             "-N",                                        // só encaminha, não abre shell
@@ -238,6 +264,7 @@ public final class SSHTunnel: @unchecked Sendable {
             "-p", String(config.port),
             "-L", "127.0.0.1:\(localPort):\(remoteHost):\(remotePort)",
         ]
+        if let knownHostsFile { arguments += ["-o", "UserKnownHostsFile=\(knownHostsFile)"] }
 
         switch config.authMethod {
         case .agent:
@@ -366,12 +393,17 @@ private final class ErrorLog: @unchecked Sendable {
 /// Serve o segredo ao helper `SSH_ASKPASS` por um FIFO.
 ///
 /// O script é um `cat` no FIFO: o segredo não é escrito em disco, não aparece no argv e
-/// não vai no ambiente. O FIFO é servido em laço porque o `ssh` pode pedir mais de uma
+/// não vai no ambiente (só o caminho do FIFO vai). O app traz o script pronto no bundle
+/// porque o sandbox não deixa executar um arquivo que o próprio app gravou; sem o bundle
+/// (testes do SwiftPM) ele é gerado na hora. O FIFO é servido em laço porque o `ssh` pode pedir mais de uma
 /// vez (chave e depois senha), e para de servir assim que o túnel autentica.
 final class AskpassChannel: @unchecked Sendable {
+    static let fifoVariable = "TABLESURF_ASKPASS_FIFO"
+
     let scriptURL: URL
     let directory: URL
     private let fifoURL: URL
+    var fifoPath: String { fifoURL.path }
     private let secret: String
     private let queue = DispatchQueue(label: "dev.tablesurf.ssh-askpass")
     private var serving = false
@@ -381,8 +413,10 @@ final class AskpassChannel: @unchecked Sendable {
         self.secret = secret
         directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("tablesurf-ssh-\(UUID().uuidString)", isDirectory: true)
-        scriptURL = directory.appendingPathComponent("askpass")
         fifoURL = directory.appendingPathComponent("secret.fifo")
+        let bundled = Bundle.main.url(forResource: "ssh-askpass", withExtension: nil)
+            .flatMap { FileManager.default.isExecutableFile(atPath: $0.path) ? $0 : nil }
+        scriptURL = bundled ?? directory.appendingPathComponent("askpass")
 
         try FileManager.default.createDirectory(
             at: directory,
@@ -392,9 +426,8 @@ final class AskpassChannel: @unchecked Sendable {
         guard mkfifo(fifoURL.path, 0o600) == 0 else {
             throw SSHTunnelError.failed("Não foi possível preparar o canal da senha.")
         }
-        // Aspas simples no caminho: o UUID não tem aspas, mas o TMPDIR do usuário pode
-        // ter espaço.
-        let script = "#!/bin/sh\nexec cat '\(fifoURL.path)'\n"
+        guard bundled == nil else { return }
+        let script = "#!/bin/sh\nexec cat \"$\(Self.fifoVariable)\"\n"
         try script.write(to: scriptURL, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: scriptURL.path)
     }

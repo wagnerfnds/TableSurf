@@ -16,6 +16,7 @@ struct ConnectionEditView: View {
     /// Senha ou passphrase do SSH digitada agora. Vazio significa "manter o que já está
     /// no Keychain" — o mesmo contrato do campo de senha do banco.
     @State private var sshSecret = ""
+    @State private var hasSSHFolderAccess = SandboxAccess.hasSSHFolderAccess
 
     @State private var testing = false
     @State private var testResult: String?
@@ -134,6 +135,18 @@ struct ConnectionEditView: View {
                     Text("Usa as chaves do ssh-agent e as opções do ~/.ssh/config (inclusive ProxyJump). O app não guarda senha nenhuma.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                    if !hasSSHFolderAccess {
+                        HStack {
+                            Text("Sem acesso ao ~/.ssh: valem as chaves do agente, mas não o config nem o known_hosts.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Permitir acesso ao ~/.ssh…") {
+                                SandboxAccess.requestSSHFolder()
+                                hasSSHFolderAccess = SandboxAccess.hasSSHFolderAccess
+                            }
+                        }
+                    }
                 case .privateKey:
                     HStack {
                         TextField("Arquivo da chave", text: ssh.privateKeyPath)
@@ -266,8 +279,9 @@ struct ConnectionEditView: View {
         panel.canChooseDirectories = false
         // As chaves moram em ~/.ssh, que o painel esconde por padrão.
         panel.showsHiddenFiles = true
-        panel.directoryURL = FileManager.default.homeDirectoryForCurrentUser.appending(path: ".ssh")
+        panel.directoryURL = SandboxAccess.sshFolder
         if panel.runModal() == .OK, let url = panel.url {
+            SandboxAccess.remember(url)
             ssh.wrappedValue.privateKeyPath = url.path
         }
         #endif
@@ -280,6 +294,7 @@ struct ConnectionEditView: View {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         if panel.runModal() == .OK, let url = panel.url {
+            SandboxAccess.grantFolder(containing: url)
             config.sqlitePath = url.path
         }
         #endif

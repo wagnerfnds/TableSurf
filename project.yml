@@ -33,7 +33,14 @@ targets:
     type: application
     platform: macOS
     sources:
-      - Sources/TableSurfApp
+      - path: Sources/TableSurfApp
+        excludes: [Resources/ssh-askpass]
+      # Sem extensão, o XcodeGen não o reconhece como recurso sozinho.
+      - path: Sources/TableSurfApp/Resources/ssh-askpass
+        buildPhase: resources
+      # Ícone (Icon Composer) compartilhado com o iOS.
+      - path: Sources/Shared/AppIcon.icon
+        buildPhase: resources
     dependencies:
       - target: TableSurfCore
     settings:
@@ -83,6 +90,8 @@ targets:
     platform: iOS
     sources:
       - Sources/TableSurfMobile
+      - path: Sources/Shared/AppIcon.icon
+        buildPhase: resources
       # Estado e preferências são os mesmos do Mac: uma regra de conexão/túnel/abas só.
       - Sources/TableSurfApp/AppState.swift
       - Sources/TableSurfApp/ConnectionSession.swift

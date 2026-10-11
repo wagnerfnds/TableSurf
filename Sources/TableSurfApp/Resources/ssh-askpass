@@ -1,0 +1,3 @@
+#!/bin/sh
+# SSH_ASKPASS do TableSurf: entrega ao ssh o segredo servido pelo app no FIFO.
+exec cat "$TABLESURF_ASKPASS_FIFO"

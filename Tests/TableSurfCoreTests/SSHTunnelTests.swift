@@ -168,6 +168,7 @@ final class SSHTunnelTests: XCTestCase {
     private func runAskpass(_ channel: AskpassChannel) throws -> String {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: channel.scriptURL.path)
+        process.environment = [AskpassChannel.fifoVariable: channel.fifoPath]
         let output = Pipe()
         process.standardOutput = output
         try process.run()

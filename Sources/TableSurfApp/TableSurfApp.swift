@@ -9,6 +9,8 @@ struct TableSurfApp: App {
     init() {
         // A aparência escolhida precisa valer antes da primeira janela desenhar.
         AppSettings().applyAppearance()
+        // Build da App Store: devolve o acesso aos arquivos e pastas liberados antes.
+        SandboxAccess.restore()
     }
 
     var body: some Scene {
