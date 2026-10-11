@@ -4,7 +4,7 @@ settings:
     # Valem para todos os targets: os frameworks embutidos também precisam de versão
     # no Info.plist, senão o App Store Connect recusa o upload.
     MARKETING_VERSION: "0.2.5"
-    CURRENT_PROJECT_VERSION: "9"
+    CURRENT_PROJECT_VERSION: "10"
 options:
   bundleIdPrefix: dev.tablesurf
   deploymentTarget:

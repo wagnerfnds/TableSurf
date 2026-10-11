@@ -66,6 +66,15 @@ for platform in $platforms; do
             DEVELOPMENT_TEAM="$TEAM_ID" TABLESURF_DISTRIBUTION=AppStore CODE_SIGN_IDENTITY="Apple Development" \
             -allowProvisioningUpdates -quiet
     fi
+    if [[ "$platform" == mac ]]; then
+        # Os bundles de recursos dos pacotes Swift (swift-crypto, swift-nio…) saem do
+        # build assinados com o certificado de desenvolvimento, e o export não os
+        # re-assina: a Apple recusa o upload (ITMS-90284). Sem código dentro, eles não
+        # precisam de assinatura própria — a do app já sela o conteúdo.
+        for bundle in "$archive"/Products/Applications/*.app/Contents/Resources/*.bundle(N); do
+            [[ -d "$bundle/Contents/MacOS" ]] || rm -rf "$bundle/Contents/_CodeSignature"
+        done
+    fi
     echo "→ Export ($destination) $platform"
     xcodebuild -exportArchive -archivePath "$archive" -exportOptionsPlist "$OUT/ExportOptions.plist" \
         -exportPath "$OUT/$platform" -allowProvisioningUpdates -quiet
