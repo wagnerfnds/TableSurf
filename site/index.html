@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TableSurf — surfe nos seus dados</title>
+  <meta name="description" content="Cliente de banco de dados nativo para Mac, iPhone e iPad. PostgreSQL, MySQL e SQLite, rápido e leve, sem coletar nada.">
+  <meta name="theme-color" content="#05142A">
+  <meta property="og:title" content="TableSurf — surfe nos seus dados">
+  <meta property="og:description" content="Cliente nativo de PostgreSQL, MySQL e SQLite para Mac, iPhone e iPad.">
+  <meta property="og:image" content="assets/mac-console.jpg">
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <canvas id="sea" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
+
+  <header class="nav">
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt="" width="32" height="32"><span>TableSurf</span></a>
+    <nav>
+      <a href="#recursos">Recursos</a>
+      <a href="#mobile">iPhone &amp; iPad</a>
+      <a href="#privacidade">Privacidade</a>
+      <a class="nav-gh" href="https://github.com/wagnerfnds/TableSurf">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" data-sea="wave">
+      <div class="hero-inner">
+        <p class="kicker"><span class="dot"></span> PostgreSQL · MySQL · SQLite</p>
+        <h1 class="title">
+          <span class="line"><span>Surfe nos</span></span>
+          <span class="line"><span>seus <em>dados</em>.</span></span>
+        </h1>
+        <p class="lede">Um cliente de banco de dados nativo para Mac, iPhone e iPad. Rápido, leve e feito em SwiftUI — milhões de linhas rolando como se fossem dez.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="https://github.com/wagnerfnds/TableSurf#building">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9s-2-.9-3.3-.9c-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1.1-2.8-4.2zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-3 1.5-.6.7-1.2 1.9-1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg>
+            <span><small>Em revisão na</small>App Store</span>
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/wagnerfnds/TableSurf">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.6 22.4c.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.9 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A11.5 11.5 0 0 0 12 .5z"/></svg>
+            <span><small>Código aberto</small>Ver no GitHub</span>
+          </a>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#mac" aria-label="Rolar para baixo"><span></span></a>
+    </section>
+
+    <!-- MAC -->
+    <section id="mac" class="showcase" data-sea="grid">
+      <div class="section-head reveal">
+        <p class="eyebrow">01 — no Mac</p>
+        <h2>Quando a onda assenta,<br>vira tabela.</h2>
+        <p>Conexões, tabelas e conteúdo em três colunas. Grid com renderização por célula e paginação em streaming — a página 50 custa o mesmo que a página 1.</p>
+      </div>
+      <div class="window reveal tilt">
+        <div class="window-glow"></div>
+        <img src="assets/mac-console.jpg" alt="Console SQL do TableSurf no Mac, com resultado agrupado por cidade" loading="lazy" width="1729" height="1800">
+      </div>
+      <div class="stats reveal">
+        <div><strong data-count="12000">0</strong><span>linhas na demo, rolagem lisa</span></div>
+        <div><strong>⌘⏎</strong><span>roda a seleção ou o script</span></div>
+        <div><strong>⌘⇧⏎</strong><span>só o comando sob o cursor</span></div>
+        <div><strong>⌘.</strong><span>cancela a consulta</span></div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="recursos" class="features" data-sea="grid">
+      <div class="section-head reveal">
+        <p class="eyebrow">02 — recursos</p>
+        <h2>Tudo que você abre<br>o cliente pra fazer.</h2>
+      </div>
+      <div class="bento">
+        <article class="card card-sql reveal">
+          <h3>Console SQL</h3>
+          <p>Realce, autocomplete de tabelas e colunas, abas, split view e biblioteca de consultas.</p>
+          <pre class="typed" aria-label="Exemplo de consulta SQL"><code id="typed"></code><span class="caret"></span></pre>
+        </article>
+        <article class="card reveal">
+          <div class="ico">⇅</div>
+          <h3>Grid para milhões</h3>
+          <p>Paginação ancorada na chave primária. Só existem as células visíveis.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ico">⌁</div>
+          <h3>Túnel SSH</h3>
+          <p>Usa o <code>ssh</code> do sistema: <code>~/.ssh/config</code> e <code>ProxyJump</code> funcionam.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ico">⚿</div>
+          <h3>Senhas no Keychain</h3>
+          <p>Nunca em disco, nunca em arquivo de config, nunca no <code>ps</code>.</p>
+        </article>
+        <article class="card reveal">
+          <div class="ico">⤓</div>
+          <h3>Dump &amp; import</h3>
+          <p>Dumps SQL com progresso e cancelamento. Exporte resultados em SQL, CSV ou JSON.</p>
+        </article>
+        <article class="card card-ddl reveal">
+          <div class="ico">▦</div>
+          <h3>Estrutura &amp; DDL</h3>
+          <p>Edite colunas, índices e chaves; veja relações, triggers e o DDL do schema.</p>
+        </article>
+        <article class="card card-engines reveal">
+          <h3>Três motores, um app</h3>
+          <ul class="engines">
+            <li><span style="--c:#4F8DF7"></span>PostgreSQL</li>
+            <li><span style="--c:#F5A524"></span>MySQL / MariaDB</li>
+            <li><span style="--c:#2EC7DB"></span>SQLite</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- MOBILE -->
+    <section id="mobile" class="mobile" data-sea="wave">
+      <div class="section-head reveal">
+        <p class="eyebrow">03 — no bolso</p>
+        <h2>O mesmo núcleo,<br>feito pro toque.</h2>
+        <p>Toque numa célula para abrir a linha como formulário. Segure para copiar como INSERT ou filtrar pelo valor. No iPad, três colunas e atalhos de teclado.</p>
+      </div>
+      <div class="phones">
+        <figure class="phone reveal" style="--r:-7deg; --y:40px"><img src="assets/iphone-row.jpg" alt="Linha aberta como formulário no iPhone" loading="lazy"></figure>
+        <figure class="phone phone-main reveal" style="--r:0deg; --y:0px"><img src="assets/iphone-grid.jpg" alt="Grid de dados no iPhone" loading="lazy"></figure>
+        <figure class="phone reveal" style="--r:7deg; --y:40px"><img src="assets/iphone-console.jpg" alt="Console SQL no iPhone" loading="lazy"></figure>
+      </div>
+      <div class="tablet reveal tilt"><img src="assets/ipad-grid.jpg" alt="TableSurf no iPad, em três colunas" loading="lazy"></div>
+    </section>
+
+    <!-- PRIVACY -->
+    <section id="privacidade" class="privacy" data-sea="calm">
+      <div class="privacy-card reveal">
+        <p class="eyebrow">04 — privacidade</p>
+        <h2>Nada sai daqui.</h2>
+        <p>Sem analytics, sem rastreamento, sem anúncios, sem servidor próprio. O app só conversa com os bancos e túneis que <em>você</em> configura.</p>
+        <a class="link" href="https://github.com/wagnerfnds/TableSurf/blob/main/PRIVACY.md">Ler a política completa →</a>
+      </div>
+    </section>
+
+    <!-- OSS -->
+    <section class="oss" data-sea="wave">
+      <div class="section-head reveal">
+        <p class="eyebrow">05 — código aberto</p>
+        <h2>Projeto pessoal,<br>porta aberta.</h2>
+        <p>Feito nas horas vagas, principalmente pra uso próprio. Issues, ideias e pull requests são muito bem-vindos.</p>
+      </div>
+      <pre class="term reveal"><span class="p">$</span> git clone https://github.com/wagnerfnds/TableSurf
+<span class="p">$</span> cd TableSurf &amp;&amp; xcodegen generate
+<span class="p">$</span> ./install.sh   <span class="c"># compila, instala e abre 🏄</span></pre>
+      <div class="ctas center reveal">
+        <a class="btn btn-primary" href="https://github.com/wagnerfnds/TableSurf"><span><small>Dê uma estrela no</small>GitHub</span></a>
+        <a class="btn btn-ghost" href="https://github.com/wagnerfnds/TableSurf/issues"><span><small>Achou algo?</small>Abrir uma issue</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <img src="assets/logo.svg" alt="" width="22" height="22">
+    <span>TableSurf · macOS 14+ · iOS 17+</span>
+    <a href="https://github.com/wagnerfnds/TableSurf/blob/main/LICENSE">Licença</a>
+  </footer>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
