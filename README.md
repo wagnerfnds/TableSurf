@@ -1,5 +1,7 @@
 # TableSurf
 
+🌊 **Site:** [wagnerfnds.github.io/TableSurf](https://wagnerfnds.github.io/TableSurf/)
+
 A native macOS database client built with SwiftUI. Connect to **PostgreSQL**, **MySQL** and **SQLite** databases, browse and edit data, and run SQL — all in a fast, lightweight Mac app.
 
 > This is a **personal project** I build in my spare time, mostly for my own use. That said, **contributions are very welcome** — issues, ideas and pull requests alike.
