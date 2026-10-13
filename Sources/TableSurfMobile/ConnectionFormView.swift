@@ -72,7 +72,9 @@ struct ConnectionFormView: View {
                 serverSection
                 credentialsSection
                 databaseSection
-                sshSection
+                // Só aparece para conexões criadas no Mac com túnel: o iOS não abre
+                // túneis, e a opção vazia confundia (App Review 2.5.2).
+                if config.sshConfig.enabled { sshSection }
             }
 
             Section {
@@ -327,21 +329,17 @@ struct ConnectionFormView: View {
             Label {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Túnel SSH")
-                    Text(config.sshConfig.enabled
-                        ? "Configurado no Mac (\(config.sshConfig.host)) — não disponível no iOS."
-                        : "Ainda não disponível no iOS.")
+                    Text("Configurado no Mac (\(config.sshConfig.host)) — não disponível no iOS.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             } icon: {
                 Image(systemName: "lock.shield").foregroundStyle(.secondary)
             }
-            if config.sshConfig.enabled {
-                Button("Conectar sem o túnel") {
-                    var ssh = config.sshConfig
-                    ssh.enabled = false
-                    config.ssh = ssh
-                }
+            Button("Conectar sem o túnel") {
+                var ssh = config.sshConfig
+                ssh.enabled = false
+                config.ssh = ssh
             }
         } footer: {
             Text("Para servidores atrás de um bastion, use uma VPN (ex.: Tailscale, WireGuard) e aponte o host para o endereço privado.")
