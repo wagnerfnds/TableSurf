@@ -91,6 +91,10 @@ final class TourTests: XCTestCase {
         app.buttons["Adicionar"].firstMatch.tap()
         sleep(1)
         shot("20-nova-conexao")
+        // O iOS não abre túneis: a seção só existe para conexões do Mac com túnel ativo.
+        app.swipeUp()
+        XCTAssertTrue(app.buttons["Testar conexão"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Túnel SSH"].exists)
         app.buttons["Cancelar"].tap()
         sleep(1)
         app.buttons["Preferências"].tap()
