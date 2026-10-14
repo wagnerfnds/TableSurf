@@ -63,7 +63,7 @@ main, .nav, .foot { position: relative; z-index: 2; }
   border-color: var(--line);
 }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 800; font-size: 20px; letter-spacing: -.02em; }
-.brand img { border-radius: 8px; box-shadow: 0 4px 18px rgba(46, 199, 219, .35); }
+.brand img { border-radius: 8px; box-shadow: 0 4px 18px rgba(255, 110, 40, .35); }
 .nav nav { display: flex; gap: clamp(12px, 2.5vw, 28px); align-items: center; font-size: 15px; }
 .nav nav a { text-decoration: none; color: var(--muted); transition: color .2s; }
 .nav nav a:hover { color: var(--text); }
